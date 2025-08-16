@@ -11,18 +11,20 @@
 typedef struct {
     Color color;
     bool active;
-} Square;
+} Pixel;
 
 typedef struct {
     int row;
     int col;
 } GridPos;
 
-void print_position(GridPos pos) { printf("row: %d col: %d\n", pos.row, pos.col); }
+void print_position(GridPos pos) {
+    printf("row: %d col: %d\n", pos.row, pos.col);
+}
 
 typedef enum {
     BLOCK_I, // Straight line
-    BLOCK_O, // Square
+    BLOCK_O, // Pixel
     BLOCK_T, // T-shape
     BLOCK_S, // S-shape
     BLOCK_Z, // Z-shape
@@ -35,62 +37,68 @@ typedef struct {
     BlockType block_type;
 } Block;
 
-Square board[GRID_ROWS][GRID_COLS] = {0};
+Pixel board[GRID_ROWS][GRID_COLS] = {0};
 
-Square *get_square(GridPos pos) { return &board[pos.row][pos.col]; }
-
-Square copy_square(GridPos pos) {
-    Square *square = get_square(pos);
-    return (Square){square->color, square->active};
+Pixel *get_pixel(GridPos pos) {
+    return &board[pos.row][pos.col];
 }
 
-void set_square(GridPos pos, Color color) { *get_square(pos) = (Square){.color = color, .active = true}; }
+Pixel copy_pixel(GridPos pos) {
+    Pixel *pixel = get_pixel(pos);
+    return (Pixel){pixel->color, pixel->active};
+}
 
-void reset_square(GridPos pos) { *get_square(pos) = (Square){0}; }
+void set_pixel(GridPos pos, Color color) {
+    *get_pixel(pos) = (Pixel){.color = color, .active = true};
+}
 
-void move_square(GridPos from, GridPos to) {
-    Square *src = get_square(from);
-    Square *dst = get_square(to);
+void reset_pixel(GridPos pos) {
+    *get_pixel(pos) = (Pixel){0};
+}
 
-    assert(src->active == true && "No square found");
+void move_pixel(GridPos from, GridPos to) {
+    Pixel *src = get_pixel(from);
+    Pixel *dst = get_pixel(to);
+
+    assert(src->active == true && "No pixel found");
     assert(dst->active == false && "Position already occupied");
 
     dst->active = true;
     dst->color = src->color;
-    reset_square(from);
+    reset_pixel(from);
 }
 
 void create_square_block(GridPos pos, Color color) {
     int n = SQUARE_BLOCK_SIZE;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            board[pos.row + i][pos.col + j] = (Square){.color = color, .active = true};
+            board[pos.row + i][pos.col + j] = (Pixel){.color = color, .active = true};
         }
     }
 }
 
 void move_square_block(GridPos src, GridPos dst) {
     int n = SQUARE_BLOCK_SIZE;
-    Square sample = copy_square(src);
+    Pixel sample = copy_pixel(src);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            reset_square((GridPos){.row = src.row + i, .col = src.col + j});
+            reset_pixel((GridPos){.row = src.row + i, .col = src.col + j});
         }
     }
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            set_square((GridPos){.row = dst.row + i, .col = dst.col + j}, sample.color);
+            set_pixel((GridPos){.row = dst.row + i, .col = dst.col + j}, sample.color);
         }
     }
 }
 
 int main(void) {
     printf("gooning simulator\n");
-    const int square_width = 10;
-    const int square_height = 10;
-    const int window_width = GRID_ROWS * square_width;
-    const int window_height = GRID_COLS * square_height;
+    const int pixel_width = 10;
+    const int pixel_height = 10;
+    const int window_width = GRID_ROWS * pixel_width;
+    const int window_height = GRID_COLS * pixel_height;
 
     InitWindow(window_width, window_height, "gooning simulator");
     SetTargetFPS(60);
@@ -110,7 +118,7 @@ int main(void) {
             timer = 0;
             print_position(pos);
             GridPos new_pos = {.row = pos.row + 1, .col = pos.col};
-            // move_square(pos, new_pos);
+            // move_pixel(pos, new_pos);
             move_square_block(pos, new_pos);
             pos = new_pos;
         }
@@ -120,7 +128,7 @@ int main(void) {
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLS; col++) {
                 if (board[row][col].active) {
-                    DrawRectangle(col * square_width, row * square_height, 5, 5, board[row][col].color);
+                    DrawRectangle(col * pixel_width, row * pixel_height, 5, 5, board[row][col].color);
                 }
             }
         }
@@ -131,4 +139,3 @@ int main(void) {
 
     return 0;
 }
-
