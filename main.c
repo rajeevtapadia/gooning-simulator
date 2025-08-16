@@ -4,19 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define GRID_ROWS 100
-#define GRID_COLS 100
-#define SQUARE_BLOCK_SIZE 10
-
-typedef struct {
-    Color color;
-    bool active;
-} Pixel;
-
-typedef struct {
-    int row;
-    int col;
-} GridPos;
+#include "block-shapes/block_shapes.h"
+#include "core.h"
 
 void print_position(GridPos pos) {
     printf("row: %d col: %d\n", pos.row, pos.col);
@@ -68,27 +57,16 @@ void move_pixel(GridPos from, GridPos to) {
     reset_pixel(from);
 }
 
-void create_square_block(GridPos pos, Color color) {
-    int n = SQUARE_BLOCK_SIZE;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            board[pos.row + i][pos.col + j] = (Pixel){.color = color, .active = true};
-        }
-    }
+bool is_block_empty(int row, int col) {
+    return !board[row][col].active;
 }
 
-void move_square_block(GridPos src, GridPos dst) {
-    int n = SQUARE_BLOCK_SIZE;
-    Pixel sample = copy_pixel(src);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            reset_pixel((GridPos){.row = src.row + i, .col = src.col + j});
-        }
-    }
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            set_pixel((GridPos){.row = dst.row + i, .col = dst.col + j}, sample.color);
+void gravity_is_a_bitch() {
+    for (int row = GRID_ROWS - 2; row >= 0; row--) {
+        for (int col = 0; col < GRID_COLS; col++) {
+            if(board[row][col].active && is_block_empty(row+1, col)) {
+                move_pixel((GridPos){row, col}, (GridPos){row+1, col});
+            }
         }
     }
 }
@@ -105,7 +83,8 @@ int main(void) {
 
     GridPos pos = {.col = GRID_COLS / 2, .row = GRID_ROWS / 2};
 
-    create_square_block(pos, GREEN);
+    // create_square_block(pos, GREEN);
+    create_L_block(pos, GREEN);
 
     float timer = 0.0f;
     float delay = 0.2f;
@@ -119,7 +98,8 @@ int main(void) {
             print_position(pos);
             GridPos new_pos = {.row = pos.row + 1, .col = pos.col};
             // move_pixel(pos, new_pos);
-            move_square_block(pos, new_pos);
+            // move_square_block(pos, new_pos);
+            gravity_is_a_bitch();
             pos = new_pos;
         }
 
