@@ -28,6 +28,21 @@ typedef struct {
 
 Pixel board[GRID_ROWS][GRID_COLS] = {0};
 
+void dump_board() {
+    printf("  ");
+    for (int i = 0; i < GRID_COLS; i++) {
+        printf("%2d", i);
+    }
+    printf("\n");
+    for (int row = 0; row < GRID_ROWS; row++) {
+        printf("%2d ", row);
+        for (int col = 0; col < GRID_COLS; col++) {
+            printf("%d ", board[row][col].active);
+        }
+        printf("\n");
+    }
+}
+
 Pixel *get_pixel(GridPos pos) {
     return &board[pos.row][pos.col];
 }
@@ -58,17 +73,63 @@ void move_pixel(GridPos from, GridPos to) {
 }
 
 bool is_block_empty(int row, int col) {
+    // if (row < 0 || col < 0 || row >= GRID_ROWS || col >= GRID_COLS) {
+    //     return false;
+    // }
     return !board[row][col].active;
+}
+
+/*
+ * returns
+ *      -1 if pixel can fall on left
+ *       1 if pixel can fall on right
+ *       0 if pixel can't move
+ */
+int can_spread(int row, int col) {
+    if (row >= GRID_ROWS - 1)
+        return 0;
+
+    if (is_block_empty(row + 1, col))
+        return 0;
+
+    if (col > 0 && is_block_empty(row + 1, col - 1)) {
+        return -1;
+    }
+    if (col < GRID_COLS - 1 && is_block_empty(row + 1, col + 1)) {
+        return 1;
+    }
+    return 0;
 }
 
 void gravity_is_a_bitch() {
     for (int row = GRID_ROWS - 2; row >= 0; row--) {
         for (int col = 0; col < GRID_COLS; col++) {
-            if(board[row][col].active && is_block_empty(row+1, col)) {
-                move_pixel((GridPos){row, col}, (GridPos){row+1, col});
+            if(is_block_empty(row, col)) continue;
+
+            // straight fall
+            if (row < GRID_ROWS -1 && is_block_empty(row + 1, col)) {
+                // printf("falling\n");
+                // printf("row %d col %d dir %d\n", row, col, 0);
+                move_pixel((GridPos){row, col}, (GridPos){row + 1, col});
+                continue;
+            } 
+
+            // spread
+            // printf("spreading\n");
+            int dir = can_spread(row, col);
+            // printf("row %d col %d dir %d\n", row, col, dir);
+            // dump_board();
+            switch (dir) {
+            case -1:
+                move_pixel((GridPos){row, col}, (GridPos){row + 1, col - 1});
+                break;
+            case 1:
+                move_pixel((GridPos){row, col}, (GridPos){row + 1, col + 1});
+                break;
             }
         }
     }
+    printf("done\n");
 }
 
 int main(void) {
@@ -79,12 +140,12 @@ int main(void) {
     const int window_height = GRID_COLS * pixel_height;
 
     InitWindow(window_width, window_height, "gooning simulator");
-    SetTargetFPS(60);
+    SetTargetFPS(10);
 
-    GridPos pos = {.col = GRID_COLS / 2, .row = GRID_ROWS / 2};
+    GridPos pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
 
-    // create_square_block(pos, GREEN);
-    create_L_block(pos, GREEN);
+    create_square_block(pos, GREEN);
+    // create_L_block(pos, GREEN);
 
     float timer = 0.0f;
     float delay = 0.2f;
@@ -93,7 +154,7 @@ int main(void) {
         float dt = GetFrameTime();
         timer += dt;
 
-        if (timer >= delay && pos.row < GRID_ROWS - SQUARE_BLOCK_SIZE) {
+        if (timer >= delay) {
             timer = 0;
             print_position(pos);
             GridPos new_pos = {.row = pos.row + 1, .col = pos.col};
