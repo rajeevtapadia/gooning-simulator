@@ -24,9 +24,9 @@ typedef enum {
     BLOCK_L  // L-shape
 } BlockType;
 
-Pixel board[GRID_ROWS][GRID_COLS] = {0};
+Grid board = {0};
 
-void copy_board(Pixel dst[GRID_ROWS][GRID_COLS], Pixel src[GRID_ROWS][GRID_COLS]) {
+void copy_board(Grid dst, Grid src) {
     memcpy(dst, src, GRID_ROWS * GRID_COLS * sizeof(Pixel));
 }
 
@@ -123,7 +123,7 @@ Direction can_spread(int row, int col) {
     return NO_DIRECTION;
 }
 
-void process_pixel_movement(Pixel board[GRID_ROWS][GRID_COLS], Pixel next_board[GRID_ROWS][GRID_COLS], int row, int col) {
+void process_pixel_movement(Grid board, Grid next_board, int row, int col) {
     if (!board[row][col].active) {
         return;
     }
@@ -170,7 +170,7 @@ void process_pixel_movement(Pixel board[GRID_ROWS][GRID_COLS], Pixel next_board[
 
 void update_pixels() {
     static bool col_scan_direction = true;
-    Pixel next_board[GRID_ROWS][GRID_COLS] = {0};
+    Grid next_board = {0};
 
     for (int row = GRID_ROWS - 1; row >= 0; row--) {
         if (col_scan_direction) {
