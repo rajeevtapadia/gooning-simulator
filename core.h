@@ -16,6 +16,10 @@ typedef struct {
     int col;
 } GridPos;
 
+typedef Pixel Grid[GRID_ROWS][GRID_COLS];
+
+typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
+
 extern Pixel board[GRID_ROWS][GRID_COLS];
 
 Pixel *get_pixel(GridPos pos);
