@@ -25,6 +25,7 @@ typedef enum {
 } BlockType;
 
 Grid board = {0};
+Pixel figure_options[OPTIONS_ROWS][OPTIONS_COLS] = {0};
 
 void copy_board(Grid dst, Grid src) {
     memcpy(dst, src, GRID_ROWS * GRID_COLS * sizeof(Pixel));
@@ -188,38 +189,26 @@ void update_pixels() {
     copy_board(board, next_board);
 }
 
-void gravity_is_a_bitch() {
-    for (int row = GRID_ROWS - 2; row >= 0; row--) {
-        for (int col = 0; col < GRID_COLS; col++) {
-            if (is_block_empty(row, col))
-                continue;
-
-            // straight fall
-            if (is_block_empty(row + 1, col)) {
-                // printf("falling\n");
-                // printf("row %d col %d dir %d\n", row, col, 0);
-                move_pixel((GridPos){row, col}, (GridPos){row + 1, col});
-                continue;
-            }
-        }
-    }
-    printf("done\n");
+void draw_shape_options() {
+    GridPos pos = {.col = 0, .row = 0};
+    create_square_icon(pos, RED);
 }
 
 int main(void) {
     printf("gooning simulator\n");
-    const int pixel_width = 10;
-    const int pixel_height = 10;
-    const int window_width = GRID_ROWS * pixel_width;
-    const int window_height = GRID_COLS * pixel_height;
+    const int pixel_width = PIXEL_SIZE;
+    const int pixel_height = PIXEL_SIZE;
+    const int window_width = SCREEN_COLS * pixel_width;
+    const int window_height = SCREEN_ROWS * pixel_height;
 
     InitWindow(window_width, window_height, "gooning simulator");
     SetTargetFPS(30);
 
-    GridPos pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
+    GridPos square_pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
 
-    create_square_block(pos, GREEN);
-    // create_L_block(pos, GREEN);
+    create_square_block(square_pos, GREEN);
+    draw_shape_options();
+    // create_L_block(square_pos, GREEN);
 
     float timer = 0.0f;
     float delay = 0.005f;
@@ -228,24 +217,29 @@ int main(void) {
         float dt = GetFrameTime();
         timer += dt;
 
-        if (timer >= delay && pos.row < GRID_ROWS) {
+        if (timer >= delay && square_pos.row < GRID_ROWS) {
             timer = 0;
-            print_position(pos);
-            GridPos new_pos = {.row = pos.row + 1, .col = pos.col};
-            // move_pixel(pos, new_pos);
-            // move_square_block(pos, new_pos);
-            // gravity_is_a_bitch();
-            // spread_those_pixels();
-            pos = new_pos;
+            GridPos new_square_pos = {.row = square_pos.row + 1, .col = square_pos.col};
+            square_pos = new_square_pos;
         }
         update_pixels();
 
         BeginDrawing();
         ClearBackground(DARKGRAY);
+        // render game grid
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLS; col++) {
                 if (board[row][col].active) {
                     DrawRectangle(col * pixel_width, row * pixel_height, 5, 5, board[row][col].color);
+                }
+            }
+        }
+        // render figure options below game grid
+        for (int row = 0; row < OPTIONS_ROWS; row++) {
+            for (int col = 0; col < OPTIONS_COLS; col++) {
+                if (figure_options[row][col].active) {
+                    DrawRectangle(col * pixel_width, (GRID_ROWS + row) * pixel_height, 3, 3,
+                                  figure_options[row][col].color);
                 }
             }
         }
