@@ -26,9 +26,14 @@ typedef enum {
 
 Grid board = {0};
 Pixel figure_options[OPTIONS_ROWS][OPTIONS_COLS] = {0};
+DragState drag_state = {0};
 
 void copy_board(Grid dst, Grid src) {
     memcpy(dst, src, GRID_ROWS * GRID_COLS * sizeof(Pixel));
+}
+
+GridPos vector2_to_grid_pos(Vector2 vector) {
+    return (GridPos){.row = vector.y / PIXEL_SIZE, .col = vector.x / PIXEL_SIZE};
 }
 
 void dump_board() {
@@ -194,6 +199,54 @@ void draw_shape_options() {
     create_square_icon(pos, RED);
 }
 
+void detect_dragging() {
+    if (drag_state.dragging) {
+        return;
+    }
+    Vector2 mouse = GetMousePosition();
+    GridPos mouse_pos = vector2_to_grid_pos(mouse);
+    print_position(mouse_pos);
+    // adjust position by skipping game grid
+    // mouse_pos.row = mouse_pos.row - GRID_ROWS;
+    // for (int row = 0; row < OPTIONS_ROWS; row++) {
+    //     for (int col = 0; col < OPTIONS_COLS; col++) {
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && mouse_pos.row > GRID_ROWS &&
+        figure_options[mouse_pos.row - GRID_ROWS][mouse_pos.col].active) {
+        drag_state.dragging = true;
+        drag_state.grid_row_offset = mouse_pos.row;
+        drag_state.grid_col_offset = mouse_pos.col;
+        //     }
+        // }
+    }
+}
+
+void perform_dragging() {
+    if (!drag_state.dragging) {
+        return;
+    }
+
+    if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+        // TODO: write the figure to appropriate buffer
+        drag_state = (DragState){0};
+        return;
+    }
+
+    Vector2 mouse = GetMousePosition();
+    GridPos mouse_pos = vector2_to_grid_pos(mouse);
+
+    drag_state.grid_row_offset = mouse_pos.row;
+    drag_state.grid_col_offset = mouse_pos.col;
+
+    // draw a ghost
+    for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
+        for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
+            int x = mouse.x + (j * PIXEL_SIZE);
+            int y = mouse.y + (i * PIXEL_SIZE);
+            DrawRectangle(x, y, 5, 5, YELLOW);
+        }
+    }
+}
+
 int main(void) {
     printf("gooning simulator\n");
     const int pixel_width = PIXEL_SIZE;
@@ -202,7 +255,7 @@ int main(void) {
     const int window_height = SCREEN_ROWS * pixel_height;
 
     InitWindow(window_width, window_height, "gooning simulator");
-    SetTargetFPS(30);
+    SetTargetFPS(60);
 
     GridPos square_pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
 
@@ -243,6 +296,10 @@ int main(void) {
                 }
             }
         }
+
+        detect_dragging();
+        perform_dragging();
+
         EndDrawing();
     }
 

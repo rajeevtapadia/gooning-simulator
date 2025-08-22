@@ -24,6 +24,12 @@ typedef struct {
     int col;
 } GridPos;
 
+typedef struct {
+    bool dragging;
+    int grid_row_offset;
+    int grid_col_offset;
+} DragState;
+
 typedef Pixel Grid[GRID_ROWS][GRID_COLS];
 
 typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
@@ -31,6 +37,8 @@ typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
 extern Grid board;
 
 extern Pixel figure_options[(SCREEN_ROWS - GRID_ROWS)][GRID_COLS];
+
+extern DragState drag_state;
 
 Pixel *get_pixel(GridPos pos);
 
