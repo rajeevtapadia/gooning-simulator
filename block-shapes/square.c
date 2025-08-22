@@ -10,11 +10,13 @@ void create_square_block(GridPos pos, Color color) {
     }
 }
 
-void create_square_icon(GridPos pos, Color color) {
+void create_square_figure(GridPos pos, Color color) {
     int n = SQUARE_BLOCK_SIZE;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            figure_options[pos.row + i][pos.col + j] = (Pixel){.color = color, .active = true};
+            int x = (pos.col + j) * PIXEL_SIZE;
+            int y = (pos.row + i) * PIXEL_SIZE;
+            DrawRectangle(x, y, 5, 5, ORANGE);
         }
     }
 }

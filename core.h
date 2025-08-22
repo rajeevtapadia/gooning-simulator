@@ -13,6 +13,19 @@
 #define OPTIONS_COLS SCREEN_COLS
 
 #define PIXEL_SIZE 10
+#define OPTIONS_COUNT 3
+
+typedef enum {
+    BLOCK_I, // Straight line
+    BLOCK_SQUARE, // Square
+    BLOCK_T, // T-shape
+    BLOCK_S, // S-shape
+    BLOCK_Z, // Z-shape
+    BLOCK_J, // J-shape (L mirrored)
+    BLOCK_L  // L-shape
+} BlockType;
+
+typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
 
 typedef struct {
     Color color;
@@ -25,6 +38,15 @@ typedef struct {
 } GridPos;
 
 typedef struct {
+    Color color;
+    BlockType type;
+    GridPos pos;
+    int total_row;
+    int total_col;
+    bool active;
+} Figure;
+
+typedef struct {
     bool dragging;
     int grid_row_offset;
     int grid_col_offset;
@@ -32,11 +54,7 @@ typedef struct {
 
 typedef Pixel Grid[GRID_ROWS][GRID_COLS];
 
-typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
-
 extern Grid board;
-
-extern Pixel figure_options[(SCREEN_ROWS - GRID_ROWS)][GRID_COLS];
 
 extern DragState drag_state;
 

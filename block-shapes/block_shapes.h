@@ -8,7 +8,7 @@
 #define SQUARE_BLOCK_SIZE 16
 
 void create_square_block(GridPos pos, Color color);
-void create_square_icon(GridPos pos, Color color);
+void create_square_figure(GridPos pos, Color color);
 void move_square_block(GridPos src, GridPos dst);
 
 

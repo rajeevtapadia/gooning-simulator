@@ -14,19 +14,9 @@ void print_position(GridPos pos) {
     printf("row: %d col: %d\n", pos.row, pos.col);
 }
 
-typedef enum {
-    BLOCK_I, // Straight line
-    BLOCK_O, // Pixel
-    BLOCK_T, // T-shape
-    BLOCK_S, // S-shape
-    BLOCK_Z, // Z-shape
-    BLOCK_J, // J-shape (L mirrored)
-    BLOCK_L  // L-shape
-} BlockType;
-
 Grid board = {0};
-Pixel figure_options[OPTIONS_ROWS][OPTIONS_COLS] = {0};
 DragState drag_state = {0};
+Figure options_panel[OPTIONS_COUNT];
 
 void copy_board(Grid dst, Grid src) {
     memcpy(dst, src, GRID_ROWS * GRID_COLS * sizeof(Pixel));
@@ -194,11 +184,6 @@ void update_pixels() {
     copy_board(board, next_board);
 }
 
-void draw_shape_options() {
-    GridPos pos = {.col = 0, .row = 0};
-    create_square_icon(pos, RED);
-}
-
 void detect_dragging() {
     if (drag_state.dragging) {
         return;
@@ -210,14 +195,14 @@ void detect_dragging() {
     // mouse_pos.row = mouse_pos.row - GRID_ROWS;
     // for (int row = 0; row < OPTIONS_ROWS; row++) {
     //     for (int col = 0; col < OPTIONS_COLS; col++) {
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && mouse_pos.row > GRID_ROWS &&
-        figure_options[mouse_pos.row - GRID_ROWS][mouse_pos.col].active) {
-        drag_state.dragging = true;
-        drag_state.grid_row_offset = mouse_pos.row;
-        drag_state.grid_col_offset = mouse_pos.col;
-        //     }
-        // }
-    }
+    // if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && mouse_pos.row > GRID_ROWS &&
+    //     figure_options[mouse_pos.row - GRID_ROWS][mouse_pos.col].active) {
+    //     drag_state.dragging = true;
+    //     drag_state.grid_row_offset = mouse_pos.row;
+    //     drag_state.grid_col_offset = mouse_pos.col;
+    //     //     }
+    //     // }
+    // }
 }
 
 void perform_dragging() {
@@ -247,6 +232,36 @@ void perform_dragging() {
     }
 }
 
+// TODO: select figures and colors by random choice
+void generate_options() {
+    int options_panel_col_width = OPTIONS_COLS / OPTIONS_COUNT;
+
+    for (int i = 0; i < OPTIONS_COUNT; i++) {
+        options_panel[i] = (Figure){
+            .color = ORANGE,
+            .type = BLOCK_SQUARE,
+            .pos = (GridPos){.row = GRID_ROWS + 1, .col = i * options_panel_col_width},
+            .total_row = SQUARE_BLOCK_SIZE,
+            .total_col = SQUARE_BLOCK_SIZE,
+            .active = true,
+        };
+    }
+}
+
+void render_options_panel() {
+    int options_panel_col_width = OPTIONS_COLS / OPTIONS_COUNT;
+    for (int i = 0; i < OPTIONS_COUNT; i++) {
+        // TODO: add more shapes
+        switch (options_panel[i].type) {
+        case BLOCK_SQUARE:
+            create_square_figure(options_panel[i].pos, options_panel[i].color);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 int main(void) {
     printf("gooning simulator\n");
     const int pixel_width = PIXEL_SIZE;
@@ -260,8 +275,8 @@ int main(void) {
     GridPos square_pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
 
     create_square_block(square_pos, GREEN);
-    draw_shape_options();
     // create_L_block(square_pos, GREEN);
+    generate_options();
 
     float timer = 0.0f;
     float delay = 0.005f;
@@ -288,17 +303,10 @@ int main(void) {
             }
         }
         // render figure options below game grid
-        for (int row = 0; row < OPTIONS_ROWS; row++) {
-            for (int col = 0; col < OPTIONS_COLS; col++) {
-                if (figure_options[row][col].active) {
-                    DrawRectangle(col * pixel_width, (GRID_ROWS + row) * pixel_height, 3, 3,
-                                  figure_options[row][col].color);
-                }
-            }
-        }
+        render_options_panel();
 
-        detect_dragging();
-        perform_dragging();
+        // detect_dragging();
+        // perform_dragging();
 
         EndDrawing();
     }
