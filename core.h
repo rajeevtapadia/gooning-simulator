@@ -50,6 +50,8 @@ typedef struct {
     bool dragging;
     int grid_row_offset;
     int grid_col_offset;
+    Figure ghost_figure;
+    int fig_idx;
 } DragState;
 
 typedef Pixel Grid[GRID_ROWS][GRID_COLS];

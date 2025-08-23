@@ -184,25 +184,40 @@ void update_pixels() {
     copy_board(board, next_board);
 }
 
+int is_on_which_square(GridPos mouse_pos) {
+    for (int i = 0; i < OPTIONS_COUNT; i++) {
+        Figure fig = options_panel[i];
+        bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + fig.total_row) &&
+                              (mouse_pos.col >= fig.pos.col) && (mouse_pos.col < fig.pos.col + fig.total_col);
+        if (is_overlapping) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void detect_dragging() {
     if (drag_state.dragging) {
+        return;
+    }
+    if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         return;
     }
     Vector2 mouse = GetMousePosition();
     GridPos mouse_pos = vector2_to_grid_pos(mouse);
     print_position(mouse_pos);
-    // adjust position by skipping game grid
-    // mouse_pos.row = mouse_pos.row - GRID_ROWS;
-    // for (int row = 0; row < OPTIONS_ROWS; row++) {
-    //     for (int col = 0; col < OPTIONS_COLS; col++) {
-    // if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && mouse_pos.row > GRID_ROWS &&
-    //     figure_options[mouse_pos.row - GRID_ROWS][mouse_pos.col].active) {
-    //     drag_state.dragging = true;
-    //     drag_state.grid_row_offset = mouse_pos.row;
-    //     drag_state.grid_col_offset = mouse_pos.col;
-    //     //     }
-    //     // }
-    // }
+    int fig_idx = is_on_which_square(mouse_pos);
+    printf("dragging fig: %d\n", fig_idx);
+    if (fig_idx != -1) {
+        drag_state = (DragState){
+            .dragging = true,
+            .grid_row_offset = mouse_pos.row,
+            .grid_col_offset = mouse_pos.col,
+            .ghost_figure = options_panel[fig_idx],
+            .fig_idx = fig_idx,
+        };
+        options_panel[fig_idx] = (Figure){0};
+    }
 }
 
 void perform_dragging() {
@@ -210,14 +225,18 @@ void perform_dragging() {
         return;
     }
 
+    Vector2 mouse = GetMousePosition();
+    GridPos mouse_pos = vector2_to_grid_pos(mouse);
+
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-        // TODO: write the figure to appropriate buffer
+        if (mouse_pos.row < GRID_ROWS) {
+            create_square_block(mouse_pos, drag_state.ghost_figure.color);
+        } else {
+            options_panel[drag_state.fig_idx] = drag_state.ghost_figure;
+        }
         drag_state = (DragState){0};
         return;
     }
-
-    Vector2 mouse = GetMousePosition();
-    GridPos mouse_pos = vector2_to_grid_pos(mouse);
 
     drag_state.grid_row_offset = mouse_pos.row;
     drag_state.grid_col_offset = mouse_pos.col;
@@ -227,7 +246,7 @@ void perform_dragging() {
         for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
             int x = mouse.x + (j * PIXEL_SIZE);
             int y = mouse.y + (i * PIXEL_SIZE);
-            DrawRectangle(x, y, 5, 5, YELLOW);
+            DrawRectangle(x, y, 5, 5, drag_state.ghost_figure.color);
         }
     }
 }
@@ -249,7 +268,6 @@ void generate_options() {
 }
 
 void render_options_panel() {
-    int options_panel_col_width = OPTIONS_COLS / OPTIONS_COUNT;
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         // TODO: add more shapes
         switch (options_panel[i].type) {
@@ -302,11 +320,14 @@ int main(void) {
                 }
             }
         }
+
+        DrawLine(0, GRID_ROWS * PIXEL_SIZE, window_width, GRID_ROWS * PIXEL_SIZE, GREEN);
+
         // render figure options below game grid
         render_options_panel();
 
-        // detect_dragging();
-        // perform_dragging();
+        detect_dragging();
+        perform_dragging();
 
         EndDrawing();
     }
