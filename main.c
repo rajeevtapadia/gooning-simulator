@@ -26,6 +26,10 @@ GridPos vector2_to_grid_pos(Vector2 vector) {
     return (GridPos){.row = vector.y / PIXEL_SIZE, .col = vector.x / PIXEL_SIZE};
 }
 
+Vector2 grid_pos_to_vector2(GridPos pos) {
+    return (Vector2){.x = pos.col * PIXEL_SIZE, .y = pos.row * PIXEL_SIZE};
+}
+
 void dump_board() {
     printf("  ");
     for (int i = 0; i < GRID_COLS; i++) {
@@ -252,6 +256,15 @@ void handle_drop(GridPos mouse_pos) {
     drag_state = (DragState){0};
 }
 
+bool validate_mouse_pos(GridPos mouse_pos) {
+    int row = mouse_pos.row;
+    int col = mouse_pos.col;
+    if (row >= 0 && row < SCREEN_ROWS && col >= 0 && col <= SCREEN_COLS - SQUARE_BLOCK_SIZE) {
+        return true;
+    }
+    return false;
+}
+
 void perform_dragging() {
     if (!drag_state.dragging) {
         return;
@@ -259,14 +272,16 @@ void perform_dragging() {
 
     Vector2 mouse = GetMousePosition();
     GridPos mouse_pos = vector2_to_grid_pos(mouse);
+    if (validate_mouse_pos(mouse_pos)) {
+        drag_state.position_offset = mouse_pos;
+    }
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-        handle_drop(mouse_pos);
+        handle_drop(drag_state.position_offset);
         return;
     }
 
-    drag_state.position_offset = mouse_pos;
-    draw_ghost(mouse);
+    draw_ghost(grid_pos_to_vector2(drag_state.position_offset));
 }
 
 // TODO: select figures and colors by random choice
