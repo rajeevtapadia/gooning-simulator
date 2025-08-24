@@ -48,8 +48,7 @@ typedef struct {
 
 typedef struct {
     bool dragging;
-    int grid_row_offset;
-    int grid_col_offset;
+    GridPos position_offset;
     Figure ghost_figure;
     int fig_idx;
 } DragState;

@@ -211,13 +211,45 @@ void detect_dragging() {
     if (fig_idx != -1) {
         drag_state = (DragState){
             .dragging = true,
-            .grid_row_offset = mouse_pos.row,
-            .grid_col_offset = mouse_pos.col,
+            .position_offset = mouse_pos,
             .ghost_figure = options_panel[fig_idx],
             .fig_idx = fig_idx,
         };
         options_panel[fig_idx] = (Figure){0};
     }
+}
+
+void draw_ghost(Vector2 mouse) {
+    for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
+        for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
+            int x = mouse.x + (j * PIXEL_SIZE);
+            int y = mouse.y + (i * PIXEL_SIZE);
+            DrawRectangle(x, y, 5, 5, drag_state.ghost_figure.color);
+        }
+    }
+}
+
+bool collides_with_game_grid(GridPos mouse_pos) {
+    for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
+        for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
+            int row = mouse_pos.row + i;
+            int col = mouse_pos.col + j;
+            if (board[row][col].active) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void handle_drop(GridPos mouse_pos) {
+    if (mouse_pos.row < GRID_ROWS && !collides_with_game_grid(mouse_pos)) {
+        create_square_block(mouse_pos, drag_state.ghost_figure.color);
+    } else {
+        options_panel[drag_state.fig_idx] = drag_state.ghost_figure;
+        drag_state = (DragState){0};
+    }
+    drag_state = (DragState){0};
 }
 
 void perform_dragging() {
@@ -229,26 +261,12 @@ void perform_dragging() {
     GridPos mouse_pos = vector2_to_grid_pos(mouse);
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-        if (mouse_pos.row < GRID_ROWS) {
-            create_square_block(mouse_pos, drag_state.ghost_figure.color);
-        } else {
-            options_panel[drag_state.fig_idx] = drag_state.ghost_figure;
-        }
-        drag_state = (DragState){0};
+        handle_drop(mouse_pos);
         return;
     }
 
-    drag_state.grid_row_offset = mouse_pos.row;
-    drag_state.grid_col_offset = mouse_pos.col;
-
-    // draw a ghost
-    for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
-        for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
-            int x = mouse.x + (j * PIXEL_SIZE);
-            int y = mouse.y + (i * PIXEL_SIZE);
-            DrawRectangle(x, y, 5, 5, drag_state.ghost_figure.color);
-        }
-    }
+    drag_state.position_offset = mouse_pos;
+    draw_ghost(mouse);
 }
 
 // TODO: select figures and colors by random choice
