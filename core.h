@@ -15,6 +15,9 @@
 #define PIXEL_SIZE 10
 #define OPTIONS_COUNT 3
 
+#define MAX_FIGURE_ROW 40
+#define MAX_FIGURE_COL 20
+
 typedef enum {
     BLOCK_I, // Straight line
     BLOCK_SQUARE, // Square
@@ -22,7 +25,8 @@ typedef enum {
     BLOCK_S, // S-shape
     BLOCK_Z, // Z-shape
     BLOCK_J, // J-shape (L mirrored)
-    BLOCK_L  // L-shape
+    BLOCK_L, // L-shape
+    BLOCK_TYPE_COUNT
 } BlockType;
 
 typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
@@ -40,6 +44,7 @@ typedef struct {
 typedef struct {
     Color color;
     BlockType type;
+    bool mask[MAX_FIGURE_ROW][MAX_FIGURE_COL];
     GridPos pos;
     int total_row;
     int total_col;

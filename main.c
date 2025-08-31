@@ -224,6 +224,7 @@ void detect_dragging() {
     }
 }
 
+// FIX: square assumed
 void draw_ghost(Vector2 mouse) {
     for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
         for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
@@ -234,6 +235,7 @@ void draw_ghost(Vector2 mouse) {
     }
 }
 
+// FIX: square assumed
 bool collides_with_game_grid(GridPos mouse_pos) {
     for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
         for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
@@ -257,6 +259,7 @@ void handle_drop(GridPos mouse_pos) {
     drag_state = (DragState){0};
 }
 
+// FIX: square assumed
 bool validate_mouse_pos(GridPos mouse_pos) {
     int row = mouse_pos.row;
     int col = mouse_pos.col;
@@ -294,6 +297,27 @@ bool is_panel_empty() {
     return !is_active;
 }
 
+BlockType get_random_block_type() {
+    return BLOCK_SQUARE;
+    // return (BlockType)(rand() % BLOCK_TYPE_COUNT);
+}
+
+// TODO: add support for all block types
+void generate_mask(Figure* option) {
+    switch (option->type) {
+    case BLOCK_SQUARE:
+        for (int row = 0; row < SQUARE_BLOCK_SIZE; row++) {
+            for (int col = 0; col < SQUARE_BLOCK_SIZE; col++) {
+                option->mask[row][col] = true;
+            }
+        }
+        break;
+    default:
+        assert("UNIMPLEMENTED");
+    }
+}
+
+// FIX: square assumed
 // TODO: select figures and colors by random choice
 void generate_options() {
     if (!is_panel_empty() || drag_state.dragging)
@@ -304,21 +328,33 @@ void generate_options() {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         options_panel[i] = (Figure){
             .color = ORANGE,
-            .type = BLOCK_SQUARE,
+            .type = get_random_block_type(),
             .pos = (GridPos){.row = GRID_ROWS + 1, .col = i * options_panel_col_width},
             .total_row = SQUARE_BLOCK_SIZE,
             .total_col = SQUARE_BLOCK_SIZE,
             .active = true,
         };
+        generate_mask(&options_panel[i]);
     }
 }
 
+// FIX: square assumed
 void render_options_panel() {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         // TODO: add more shapes
-        switch (options_panel[i].type) {
+        Figure option_fig = options_panel[i];
+        switch (option_fig.type) {
         case BLOCK_SQUARE:
-            create_square_figure(options_panel[i].pos, options_panel[i].color);
+            // create_square_figure(options_panel[i].pos, options_panel[i].color);
+            for (int i = 0; i < MAX_FIGURE_ROW; i++) {
+                for (int j = 0; j < MAX_FIGURE_COL; j++) {
+                    if (option_fig.mask[i][j]) {
+                        int x = (option_fig.pos.col + j) * PIXEL_SIZE;
+                        int y = (option_fig.pos.row + i) * PIXEL_SIZE;
+                        DrawRectangle(x, y, 5, 5, option_fig.color);
+                    }
+                }
+            }
             break;
         default:
             break;
