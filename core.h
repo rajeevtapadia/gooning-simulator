@@ -29,6 +29,11 @@ typedef enum {
     BLOCK_TYPE_COUNT
 } BlockType;
 
+// BlockType dimension constants
+#define SQUARE_BLOCK_SIZE 16
+#define BLOCK_L_WIDTH 24
+#define BLOCK_L_HEIGHT 14
+
 typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
 
 typedef struct {
@@ -46,8 +51,8 @@ typedef struct {
     BlockType type;
     bool mask[MAX_FIGURE_ROW][MAX_FIGURE_COL];
     GridPos pos;
-    int total_row;
-    int total_col;
+    int width;
+    int height;
     bool active;
 } Figure;
 

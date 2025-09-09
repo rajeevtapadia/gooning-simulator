@@ -225,11 +225,10 @@ void detect_dragging() {
     }
 }
 
-// FIX: square assumed
 void draw_ghost(Vector2 mouse) {
     Figure fig = drag_state.ghost_figure;
-    for (int i = 0; i < MAX_FIGURE_ROW; i++) {
-        for (int j = 0; j < MAX_FIGURE_COL; j++) {
+    for (int i = 0; i < fig.height; i++) {
+        for (int j = 0; j < fig.width; j++) {
             if (fig.mask[i][j]) {
                 int x = mouse.x + (j * PIXEL_SIZE);
                 int y = mouse.y + (i * PIXEL_SIZE);
@@ -239,13 +238,14 @@ void draw_ghost(Vector2 mouse) {
     }
 }
 
-// FIX: square assumed
 bool collides_with_game_grid(GridPos mouse_pos) {
-    for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
-        for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
+    int fig_width = drag_state.ghost_figure.width;
+    int fig_height = drag_state.ghost_figure.height;
+    for (int i = 0; i < fig_height; i++) {
+        for (int j = 0; j < fig_width; j++) {
             int row = mouse_pos.row + i;
             int col = mouse_pos.col + j;
-            if (board[row][col].active) {
+            if (row < GRID_ROWS && col < GRID_COLS && board[row][col].active) {
                 return true;
             }
         }
@@ -272,12 +272,10 @@ void handle_drop(GridPos mouse_pos) {
     drag_state = (DragState){0};
 }
 
-// FIX: square assumed
-// storing the actual width of the shape is required
 bool validate_mouse_pos(GridPos mouse_pos) {
     int row = mouse_pos.row;
     int col = mouse_pos.col;
-    if (row >= 0 && row < SCREEN_ROWS && col >= 0 && col <= SCREEN_COLS - SQUARE_BLOCK_SIZE) {
+    if (row >= 0 && row < SCREEN_ROWS && col >= 0 && col <= SCREEN_COLS - drag_state.ghost_figure.width) {
         return true;
     }
     return false;
@@ -290,6 +288,7 @@ void perform_dragging() {
 
     Vector2 mouse = GetMousePosition();
     GridPos mouse_pos = vector2_to_grid_pos(mouse);
+    // TODO: snap figure to edge when mouse is out of game grid
     if (validate_mouse_pos(mouse_pos)) {
         drag_state.position_offset = mouse_pos;
     }
@@ -327,13 +326,13 @@ void generate_mask(Figure *option) {
         }
         break;
     case BLOCK_L:
-        for (int row = 0; row < 7; row++) {
-            for (int col = 0; col < 7; col++) {
+        for (int row = 0; row < BLOCK_L_HEIGHT / 2; row++) {
+            for (int col = 0; col < BLOCK_L_HEIGHT / 2; col++) {
                 option->mask[row][col] = true;
             }
         }
-        for (int row = 7; row < 14; row++) {
-            for (int col = 0; col < 24; col++) {
+        for (int row = BLOCK_L_HEIGHT / 2; row < BLOCK_L_HEIGHT; row++) {
+            for (int col = 0; col < BLOCK_L_WIDTH; col++) {
                 option->mask[row][col] = true;
             }
         }
@@ -343,6 +342,23 @@ void generate_mask(Figure *option) {
     }
 }
 
+// TODO: extend for other block types
+void set_fig_width_and_height(Figure *fig) {
+    switch (fig->type) {
+    case BLOCK_SQUARE:
+        fig->width = SQUARE_BLOCK_SIZE;
+        fig->height = SQUARE_BLOCK_SIZE;
+        break;
+    case BLOCK_L:
+        fig->width = BLOCK_L_WIDTH;
+        fig->height = BLOCK_L_HEIGHT;
+        break;
+    default:
+        assert("invalid shape passed in set_fig_width_and_height()");
+    }
+}
+
+//
 // TODO: select figures and colors by random choice
 void generate_options() {
     if (!is_panel_empty() || drag_state.dragging)
@@ -357,6 +373,8 @@ void generate_options() {
             .pos = (GridPos){.row = GRID_ROWS + 1, .col = i * options_panel_col_width},
             .active = true,
         };
+
+        set_fig_width_and_height(&options_panel[i]);
         generate_mask(&options_panel[i]);
     }
 }
