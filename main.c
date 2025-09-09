@@ -189,11 +189,12 @@ void update_pixels() {
     copy_board(board, next_board);
 }
 
+// TODO: square is assumed
 int is_on_which_square(GridPos mouse_pos) {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         Figure fig = options_panel[i];
-        bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + fig.total_row) &&
-                              (mouse_pos.col >= fig.pos.col) && (mouse_pos.col < fig.pos.col + fig.total_col);
+        bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + MAX_FIGURE_ROW) &&
+                              (mouse_pos.col >= fig.pos.col) && (mouse_pos.col < fig.pos.col + MAX_FIGURE_COL);
         if (is_overlapping) {
             return i;
         }
@@ -226,11 +227,14 @@ void detect_dragging() {
 
 // FIX: square assumed
 void draw_ghost(Vector2 mouse) {
-    for (int i = 0; i < SQUARE_BLOCK_SIZE; i++) {
-        for (int j = 0; j < SQUARE_BLOCK_SIZE; j++) {
-            int x = mouse.x + (j * PIXEL_SIZE);
-            int y = mouse.y + (i * PIXEL_SIZE);
-            DrawRectangle(x, y, 5, 5, drag_state.ghost_figure.color);
+    Figure fig = drag_state.ghost_figure;
+    for (int i = 0; i < MAX_FIGURE_ROW; i++) {
+        for (int j = 0; j < MAX_FIGURE_COL; j++) {
+            if (fig.mask[i][j]) {
+                int x = mouse.x + (j * PIXEL_SIZE);
+                int y = mouse.y + (i * PIXEL_SIZE);
+                DrawRectangle(x, y, 5, 5, fig.color);
+            }
         }
     }
 }
@@ -251,7 +255,16 @@ bool collides_with_game_grid(GridPos mouse_pos) {
 
 void handle_drop(GridPos mouse_pos) {
     if (mouse_pos.row < GRID_ROWS && !collides_with_game_grid(mouse_pos)) {
-        create_square_block(mouse_pos, drag_state.ghost_figure.color);
+        Figure fig = drag_state.ghost_figure;
+        for (int i = 0; i < MAX_FIGURE_ROW; i++) {
+            for (int j = 0; j < MAX_FIGURE_COL; j++) {
+                if (fig.mask[i][j]) {
+                    int row = mouse_pos.row + i;
+                    int col = mouse_pos.col + j;
+                    board[row][col] = (Pixel){.color = fig.color, .active = true};
+                }
+            }
+        }
     } else {
         options_panel[drag_state.fig_idx] = drag_state.ghost_figure;
         drag_state = (DragState){0};
@@ -260,6 +273,7 @@ void handle_drop(GridPos mouse_pos) {
 }
 
 // FIX: square assumed
+// storing the actual width of the shape is required
 bool validate_mouse_pos(GridPos mouse_pos) {
     int row = mouse_pos.row;
     int col = mouse_pos.col;
@@ -298,16 +312,28 @@ bool is_panel_empty() {
 }
 
 BlockType get_random_block_type() {
-    return BLOCK_SQUARE;
+    return BLOCK_L;
     // return (BlockType)(rand() % BLOCK_TYPE_COUNT);
 }
 
-// TODO: add support for all block types
-void generate_mask(Figure* option) {
+// TODO: extend for other block types
+void generate_mask(Figure *option) {
     switch (option->type) {
     case BLOCK_SQUARE:
         for (int row = 0; row < SQUARE_BLOCK_SIZE; row++) {
             for (int col = 0; col < SQUARE_BLOCK_SIZE; col++) {
+                option->mask[row][col] = true;
+            }
+        }
+        break;
+    case BLOCK_L:
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 7; col++) {
+                option->mask[row][col] = true;
+            }
+        }
+        for (int row = 7; row < 14; row++) {
+            for (int col = 0; col < 24; col++) {
                 option->mask[row][col] = true;
             }
         }
@@ -317,7 +343,6 @@ void generate_mask(Figure* option) {
     }
 }
 
-// FIX: square assumed
 // TODO: select figures and colors by random choice
 void generate_options() {
     if (!is_panel_empty() || drag_state.dragging)
@@ -330,8 +355,6 @@ void generate_options() {
             .color = ORANGE,
             .type = get_random_block_type(),
             .pos = (GridPos){.row = GRID_ROWS + 1, .col = i * options_panel_col_width},
-            .total_row = SQUARE_BLOCK_SIZE,
-            .total_col = SQUARE_BLOCK_SIZE,
             .active = true,
         };
         generate_mask(&options_panel[i]);
@@ -341,23 +364,17 @@ void generate_options() {
 // FIX: square assumed
 void render_options_panel() {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
-        // TODO: add more shapes
         Figure option_fig = options_panel[i];
-        switch (option_fig.type) {
-        case BLOCK_SQUARE:
-            // create_square_figure(options_panel[i].pos, options_panel[i].color);
-            for (int i = 0; i < MAX_FIGURE_ROW; i++) {
-                for (int j = 0; j < MAX_FIGURE_COL; j++) {
-                    if (option_fig.mask[i][j]) {
-                        int x = (option_fig.pos.col + j) * PIXEL_SIZE;
-                        int y = (option_fig.pos.row + i) * PIXEL_SIZE;
-                        DrawRectangle(x, y, 5, 5, option_fig.color);
-                    }
+        for (int i = 0; i < MAX_FIGURE_ROW; i++) {
+            for (int j = 0; j < MAX_FIGURE_COL; j++) {
+                // printf("%d", option_fig.mask[i][j]);
+                if (option_fig.mask[i][j]) {
+                    int x = (option_fig.pos.col + j) * PIXEL_SIZE;
+                    int y = (option_fig.pos.row + i) * PIXEL_SIZE;
+                    DrawRectangle(x, y, 5, 5, option_fig.color);
                 }
             }
-            break;
-        default:
-            break;
+            // printf("\n");
         }
     }
 }

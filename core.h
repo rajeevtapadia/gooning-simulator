@@ -16,7 +16,7 @@
 #define OPTIONS_COUNT 3
 
 #define MAX_FIGURE_ROW 40
-#define MAX_FIGURE_COL 20
+#define MAX_FIGURE_COL 30
 
 typedef enum {
     BLOCK_I, // Straight line
