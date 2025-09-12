@@ -1,12 +1,11 @@
 #include "core.h"
 #include <stdio.h>
 
-// TODO: square is assumed
 static int is_on_which_square(GridPos mouse_pos) {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         Figure fig = options_panel[i];
-        bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + MAX_FIGURE_ROW) &&
-                              (mouse_pos.col >= fig.pos.col) && (mouse_pos.col < fig.pos.col + MAX_FIGURE_COL);
+        bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + fig.height) &&
+                              (mouse_pos.col >= fig.pos.col) && (mouse_pos.col < fig.pos.col + fig.width);
         if (is_overlapping) {
             return i;
         }
