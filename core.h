@@ -33,9 +33,12 @@ typedef enum {
 } BlockType;
 
 // BlockType dimension constants
+#define BLOCK_SCALING_FACTOR 8
 #define SQUARE_BLOCK_SIZE 16
 #define BLOCK_L_WIDTH 24
 #define BLOCK_L_HEIGHT 14
+#define BLOCK_S_WIDTH 3 * BLOCK_SCALING_FACTOR
+#define BLOCK_S_HEIGHT 2 * BLOCK_SCALING_FACTOR
 
 typedef enum { LEFT, RIGHT, DOWN, NO_DIRECTION } Direction;
 

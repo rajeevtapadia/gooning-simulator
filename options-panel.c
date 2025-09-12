@@ -1,4 +1,5 @@
 #include "core.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 static bool is_panel_empty() {
@@ -11,8 +12,16 @@ static bool is_panel_empty() {
 }
 
 static BlockType get_random_block_type() {
-    return BLOCK_L;
+    return BLOCK_S;
     // return (BlockType)(rand() % BLOCK_TYPE_COUNT);
+}
+
+static void draw_square_on_board(Figure *option, int row, int col, int size) {
+    for (int i = row; i < row + size; i++) {
+        for (int j = col; j < col + size; j++) {
+            option->mask[i][j] = true;
+        }
+    }
 }
 
 // TODO: extend for other block types
@@ -37,6 +46,14 @@ static void generate_mask(Figure *option) {
             }
         }
         break;
+    case BLOCK_S:
+        int step = BLOCK_SCALING_FACTOR;
+        int size = BLOCK_SCALING_FACTOR;
+        draw_square_on_board(option, 0 * step, 0 * step, size);
+        draw_square_on_board(option, 0 * step, 1 * step, size);
+        draw_square_on_board(option, 1 * step, 1 * step, size);
+        draw_square_on_board(option, 1 * step, 2 * step, size);
+        break;
     default:
         assert("UNIMPLEMENTED");
     }
@@ -52,6 +69,10 @@ static void set_fig_width_and_height(Figure *fig) {
     case BLOCK_L:
         fig->width = BLOCK_L_WIDTH;
         fig->height = BLOCK_L_HEIGHT;
+        break;
+    case BLOCK_S:
+        fig->width = BLOCK_S_WIDTH ;
+        fig->height = BLOCK_S_HEIGHT;
         break;
     default:
         assert("invalid shape passed in set_fig_width_and_height()");
@@ -96,4 +117,3 @@ void render_options_panel() {
         }
     }
 }
-
