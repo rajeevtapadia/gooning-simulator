@@ -1,7 +1,7 @@
 #include "core.h"
 #include <stdlib.h>
 
-bool is_panel_empty() {
+static bool is_panel_empty() {
     bool is_active = false;
     ;
     for (int i = 0; i < OPTIONS_COUNT; i++) {
@@ -10,13 +10,13 @@ bool is_panel_empty() {
     return !is_active;
 }
 
-BlockType get_random_block_type() {
+static BlockType get_random_block_type() {
     return BLOCK_L;
     // return (BlockType)(rand() % BLOCK_TYPE_COUNT);
 }
 
 // TODO: extend for other block types
-void generate_mask(Figure *option) {
+static void generate_mask(Figure *option) {
     switch (option->type) {
     case BLOCK_SQUARE:
         for (int row = 0; row < SQUARE_BLOCK_SIZE; row++) {
@@ -43,7 +43,7 @@ void generate_mask(Figure *option) {
 }
 
 // TODO: extend for other block types
-void set_fig_width_and_height(Figure *fig) {
+static void set_fig_width_and_height(Figure *fig) {
     switch (fig->type) {
     case BLOCK_SQUARE:
         fig->width = SQUARE_BLOCK_SIZE;

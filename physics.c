@@ -1,13 +1,13 @@
 #include "core.h"
 #include <stdlib.h>
 
-bool can_spread_left(int row, int col) {
+static bool can_spread_left(int row, int col) {
     if (col > 0 && is_block_empty(row + 1, col - 1)) {
         return true;
     }
     return false;
 }
-bool can_spread_right(int row, int col) {
+static bool can_spread_right(int row, int col) {
     if (col < GRID_COLS - 1 && is_block_empty(row + 1, col + 1)) {
         return true;
     }
@@ -36,7 +36,7 @@ Direction can_spread(int row, int col) {
     return NO_DIRECTION;
 }
 
-void process_pixel_movement(Grid board, Grid next_board, int row, int col) {
+static void process_pixel_movement(Grid board, Grid next_board, int row, int col) {
     if (!board[row][col].active) {
         return;
     }

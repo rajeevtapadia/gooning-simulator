@@ -72,19 +72,9 @@ extern Grid board;
 extern DragState drag_state;
 extern Figure options_panel[OPTIONS_COUNT];
 
-Pixel *get_pixel(GridPos pos);
-
-Pixel copy_pixel(GridPos pos);
-
-void set_pixel(GridPos pos, Color color);
-
-void reset_pixel(GridPos pos);
-
-void move_pixel(GridPos from, GridPos to);
-
 // physics.c
-bool is_block_empty(int row, int col);
 void update_pixels();
+Direction can_spread(int row, int col);
 
 // options-panel.c
 void generate_options();
@@ -98,7 +88,11 @@ void perform_dragging();
 void flood_fill();
 
 // game-grid.c
+Pixel copy_pixel(GridPos pos);
 void copy_board(Grid dst, Grid src);
+bool is_block_empty(int row, int col);
+void set_pixel(GridPos pos, Color color);
+void reset_pixel(GridPos pos);
 
 // util.c
 void print_position(GridPos pos);

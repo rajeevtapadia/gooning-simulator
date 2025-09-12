@@ -1,7 +1,8 @@
 #include "core.h"
 #include <string.h>
 
-bool can_move() {
+// TODO: use can_spread() here
+static bool can_move() {
     for (int row = GRID_ROWS - 2; row >= 0; row--) {
         for (int col = 1; col < GRID_COLS - 1; col++) {
             if (board[row][col].active) {
@@ -16,7 +17,7 @@ bool can_move() {
     return false;
 }
 
-void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool *touches_left, bool *touches_right) {
+static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool *touches_left, bool *touches_right) {
     if (row < 0 || row >= GRID_ROWS) {
         return;
     }
@@ -44,7 +45,7 @@ void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool
     }
 }
 
-void remove_visited(bool visited[GRID_ROWS][GRID_COLS]) {
+static void remove_visited(bool visited[GRID_ROWS][GRID_COLS]) {
     for (int row = GRID_ROWS - 1; row >= 0; row--) {
         for (int col = 0; col < GRID_COLS; col++) {
             if (visited[row][col] == 1) {

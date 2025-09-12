@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 // TODO: square is assumed
-int is_on_which_square(GridPos mouse_pos) {
+static int is_on_which_square(GridPos mouse_pos) {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         Figure fig = options_panel[i];
         bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + MAX_FIGURE_ROW) &&
@@ -37,7 +37,7 @@ void detect_dragging() {
     }
 }
 
-void draw_ghost(Vector2 mouse) {
+static void draw_ghost(Vector2 mouse) {
     Figure fig = drag_state.ghost_figure;
     for (int i = 0; i < fig.height; i++) {
         for (int j = 0; j < fig.width; j++) {
@@ -50,7 +50,7 @@ void draw_ghost(Vector2 mouse) {
     }
 }
 
-bool collides_with_game_grid(GridPos mouse_pos) {
+static bool collides_with_game_grid(GridPos mouse_pos) {
     int fig_width = drag_state.ghost_figure.width;
     int fig_height = drag_state.ghost_figure.height;
     for (int i = 0; i < fig_height; i++) {
@@ -65,7 +65,7 @@ bool collides_with_game_grid(GridPos mouse_pos) {
     return false;
 }
 
-void handle_drop(GridPos mouse_pos) {
+static void handle_drop(GridPos mouse_pos) {
     if (mouse_pos.row < GRID_ROWS && !collides_with_game_grid(mouse_pos)) {
         Figure fig = drag_state.ghost_figure;
         for (int i = 0; i < MAX_FIGURE_ROW; i++) {
@@ -84,7 +84,7 @@ void handle_drop(GridPos mouse_pos) {
     drag_state = (DragState){0};
 }
 
-bool validate_mouse_pos(GridPos mouse_pos) {
+static bool validate_mouse_pos(GridPos mouse_pos) {
     int row = mouse_pos.row;
     int col = mouse_pos.col;
     if (row >= 0 && row < SCREEN_ROWS && col >= 0 && col <= SCREEN_COLS - drag_state.ghost_figure.width) {
@@ -112,3 +112,4 @@ void perform_dragging() {
 
     draw_ghost(grid_pos_to_vector2(drag_state.position_offset));
 }
+ 
