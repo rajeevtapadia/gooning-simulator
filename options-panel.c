@@ -26,6 +26,7 @@ static void draw_square_on_board(Figure *option, int row, int col, int size) {
 
 // TODO: extend for other block types
 static void generate_mask(Figure *option) {
+    int step, size;
     switch (option->type) {
     case BLOCK_SQUARE:
         for (int row = 0; row < SQUARE_BLOCK_SIZE; row++) {
@@ -47,13 +48,20 @@ static void generate_mask(Figure *option) {
         }
         break;
     case BLOCK_S:
-        int step = BLOCK_SCALING_FACTOR;
-        int size = BLOCK_SCALING_FACTOR;
+        step = BLOCK_SCALING_FACTOR;
+        size = BLOCK_SCALING_FACTOR;
         draw_square_on_board(option, 0 * step, 0 * step, size);
         draw_square_on_board(option, 0 * step, 1 * step, size);
         draw_square_on_board(option, 1 * step, 1 * step, size);
         draw_square_on_board(option, 1 * step, 2 * step, size);
         break;
+    case BLOCK_T:
+        step = BLOCK_SCALING_FACTOR;
+        size = BLOCK_SCALING_FACTOR;
+        draw_square_on_board(option, 0 * step, 1 * step, size);
+        draw_square_on_board(option, 1 * step, 0 * step, size);
+        draw_square_on_board(option, 1 * step, 1 * step, size);
+        draw_square_on_board(option, 1 * step, 2 * step, size);
     default:
         assert("UNIMPLEMENTED");
     }
@@ -71,8 +79,12 @@ static void set_fig_width_and_height(Figure *fig) {
         fig->height = BLOCK_L_HEIGHT;
         break;
     case BLOCK_S:
-        fig->width = BLOCK_S_WIDTH ;
+        fig->width = BLOCK_S_WIDTH;
         fig->height = BLOCK_S_HEIGHT;
+        break;
+    case BLOCK_T:
+        fig->width = BLOCK_T_WIDTH;
+        fig->height = BLOCK_T_HEIGHT;
         break;
     default:
         assert("invalid shape passed in set_fig_width_and_height()");
