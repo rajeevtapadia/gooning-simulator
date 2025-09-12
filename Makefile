@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2
+CFLAGS = -Wall -Wextra -O2 -g
 LDFLAGS = -lraylib -lm
 TARGET = main.out
 
-SRC := main.c $(wildcard block-shapes/*.c)
+SRC := $(shell find . -name '*.c')
 OBJ := $(patsubst %.c,build/%.o,$(SRC))
 
 all: $(TARGET)
@@ -11,7 +11,6 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# Create directories as needed and compile
 build/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
