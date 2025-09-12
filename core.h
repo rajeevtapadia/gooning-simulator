@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <sys/types.h>
+#include <assert.h>
 
 #define GRID_ROWS 100
 #define OPTIONS_ROWS 30
@@ -17,6 +18,8 @@
 
 #define MAX_FIGURE_ROW 40
 #define MAX_FIGURE_COL 30
+
+#define SPREAD_CHANCE 50
 
 typedef enum {
     BLOCK_I, // Straight line
@@ -66,8 +69,8 @@ typedef struct {
 typedef Pixel Grid[GRID_ROWS][GRID_COLS];
 
 extern Grid board;
-
 extern DragState drag_state;
+extern Figure options_panel[OPTIONS_COUNT];
 
 Pixel *get_pixel(GridPos pos);
 
@@ -78,6 +81,29 @@ void set_pixel(GridPos pos, Color color);
 void reset_pixel(GridPos pos);
 
 void move_pixel(GridPos from, GridPos to);
+
+// physics.c
+bool is_block_empty(int row, int col);
+void update_pixels();
+
+// options-panel.c
+void generate_options();
+void render_options_panel();
+
+// drag-and-drop.c
+void detect_dragging();
+void perform_dragging();
+
+// flood-fill.c
+void flood_fill();
+
+// game-grid.c
+void copy_board(Grid dst, Grid src);
+
+// util.c
+void print_position(GridPos pos);
+GridPos vector2_to_grid_pos(Vector2 vector);
+Vector2 grid_pos_to_vector2(GridPos pos);
 
 #endif // CORE_H
 
