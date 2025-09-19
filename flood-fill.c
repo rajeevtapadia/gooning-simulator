@@ -17,8 +17,7 @@ static bool can_move() {
     return false;
 }
 
-static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool *touches_left,
-                bool *touches_right) {
+static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool *touches_right) {
     if (row < 0 || row >= GRID_ROWS) {
         return;
     }
@@ -33,23 +32,20 @@ static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color colo
     }
     if (memcmp(&board[row][col].color, &color, sizeof(color)) == 0) {
         visited[row][col] = true;
-        if (col == 0) {
-            *touches_left = true;
-        }
         if (col == GRID_COLS - 1) {
             *touches_right = true;
         }
         // sides
-        dfs(row + 1, col, visited, color, touches_left, touches_right);
-        dfs(row - 1, col, visited, color, touches_left, touches_right);
-        dfs(row, col - 1, visited, color, touches_left, touches_right);
-        dfs(row, col - 1, visited, color, touches_left, touches_right);
+        dfs(row + 1, col, visited, color, touches_right);
+        dfs(row - 1, col, visited, color, touches_right);
+        dfs(row, col - 1, visited, color, touches_right);
+        dfs(row, col - 1, visited, color, touches_right);
 
         // diagonals
-        dfs(row + 1, col + 1, visited, color, touches_left, touches_right);
-        dfs(row - 1, col + 1, visited, color, touches_left, touches_right);
-        dfs(row + 1, col - 1, visited, color, touches_left, touches_right);
-        dfs(row - 1, col - 1, visited, color, touches_left, touches_right);
+        dfs(row + 1, col + 1, visited, color, touches_right);
+        dfs(row - 1, col + 1, visited, color, touches_right);
+        dfs(row + 1, col - 1, visited, color, touches_right);
+        dfs(row - 1, col - 1, visited, color, touches_right);
     }
 }
 
@@ -71,25 +67,12 @@ void flood_fill() {
     for (int row = GRID_ROWS - 1; row >= 0; row--) {
         // check from left most Pixel
         {
-            bool touches_left = false;
             bool touches_right = false;
             Color color = board[row][0].color;
             bool visited[GRID_ROWS][GRID_COLS] = {0};
-            dfs(row, 0, visited, color, &touches_left, &touches_right);
+            dfs(row, 0, visited, color, &touches_right);
 
-            if (touches_left && touches_right) {
-                remove_visited(visited);
-            }
-        }
-
-        // check from right most Pixel
-        {
-            bool touches_left = false;
-            bool touches_right = false;
-            bool visited[GRID_ROWS][GRID_COLS] = {0};
-            Color color = board[row][GRID_COLS - 1].color;
-            dfs(row, GRID_COLS - 1, visited, color, &touches_left, &touches_right);
-            if (touches_left && touches_right) {
+            if (touches_right) {
                 remove_visited(visited);
             }
         }
