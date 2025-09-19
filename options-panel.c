@@ -91,6 +91,12 @@ static void set_fig_width_and_height(Figure *fig) {
     }
 }
 
+Color get_random_color() {
+    Color colors[] = {BLUE, RED, GREEN};
+    int n = sizeof(colors) / sizeof(colors[0]);
+    return colors[rand() % n];
+}
+
 //
 // TODO: select figures and colors by random choice
 void generate_options() {
@@ -101,7 +107,7 @@ void generate_options() {
 
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         options_panel[i] = (Figure){
-            .color = ORANGE,
+            .color = get_random_color(),
             .type = get_random_block_type(),
             .pos = (GridPos){.row = GRID_ROWS + 1, .col = i * options_panel_col_width},
             .active = true,
