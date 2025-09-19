@@ -17,7 +17,8 @@ static bool can_move() {
     return false;
 }
 
-static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool *touches_left, bool *touches_right) {
+static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color color, bool *touches_left,
+                bool *touches_right) {
     if (row < 0 || row >= GRID_ROWS) {
         return;
     }
@@ -38,10 +39,17 @@ static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color colo
         if (col == GRID_COLS - 1) {
             *touches_right = true;
         }
+        // sides
         dfs(row + 1, col, visited, color, touches_left, touches_right);
         dfs(row - 1, col, visited, color, touches_left, touches_right);
         dfs(row, col - 1, visited, color, touches_left, touches_right);
         dfs(row, col - 1, visited, color, touches_left, touches_right);
+
+        // diagonals
+        dfs(row + 1, col + 1, visited, color, touches_left, touches_right);
+        dfs(row - 1, col + 1, visited, color, touches_left, touches_right);
+        dfs(row + 1, col - 1, visited, color, touches_left, touches_right);
+        dfs(row - 1, col - 1, visited, color, touches_left, touches_right);
     }
 }
 
@@ -87,4 +95,3 @@ void flood_fill() {
         }
     }
 }
-
