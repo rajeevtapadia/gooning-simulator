@@ -61,6 +61,15 @@ static void generate_mask(Figure *option) {
         draw_square_on_board(option, 1 * step, 0 * step, size);
         draw_square_on_board(option, 1 * step, 1 * step, size);
         draw_square_on_board(option, 1 * step, 2 * step, size);
+        break;
+    case BLOCK_I:
+        step = BLOCK_SCALING_FACTOR;
+        size = BLOCK_SCALING_FACTOR;
+        draw_square_on_board(option, 0, 0 * step, size);
+        draw_square_on_board(option, 0, 1 * step, size);
+        draw_square_on_board(option, 0, 2 * step, size);
+        draw_square_on_board(option, 0, 3 * step, size);
+        break;
     default:
         assert("UNIMPLEMENTED");
     }
@@ -84,6 +93,10 @@ static void set_fig_width_and_height(Figure *fig) {
     case BLOCK_T:
         fig->width = BLOCK_T_WIDTH;
         fig->height = BLOCK_T_HEIGHT;
+        break;
+    case BLOCK_I:
+        fig->width = BLOCK_I_WIDTH;
+        fig->height = BLOCK_I_HEIGHT;
         break;
     default:
         assert("invalid shape passed in set_fig_width_and_height()");
