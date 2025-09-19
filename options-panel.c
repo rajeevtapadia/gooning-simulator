@@ -1,14 +1,13 @@
 #include "core.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 static bool is_panel_empty() {
-    bool is_active = false;
-    ;
     for (int i = 0; i < OPTIONS_COUNT; i++) {
-        is_active = options_panel[i].active;
+        if (options_panel[i].active) {
+            return false;
+        }
     }
-    return !is_active;
+    return true;
 }
 
 static BlockType get_random_block_type() {
