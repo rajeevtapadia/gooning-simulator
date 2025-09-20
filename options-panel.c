@@ -46,6 +46,14 @@ static void generate_mask(Figure *option) {
             }
         }
         break;
+    case BLOCK_J:
+        step = BLOCK_SCALING_FACTOR;
+        size = BLOCK_SCALING_FACTOR;
+        draw_square_on_board(option, 0 * step, 2 * step, size);
+        draw_square_on_board(option, 1 * step, 0 * step, size);
+        draw_square_on_board(option, 1 * step, 1 * step, size);
+        draw_square_on_board(option, 1 * step, 2 * step, size);
+        break;
     case BLOCK_Z:
         step = BLOCK_SCALING_FACTOR;
         size = BLOCK_SCALING_FACTOR;
@@ -93,6 +101,10 @@ static void set_fig_width_and_height(Figure *fig) {
     case BLOCK_L:
         fig->width = BLOCK_L_WIDTH;
         fig->height = BLOCK_L_HEIGHT;
+        break;
+    case BLOCK_J:
+        fig->width = BLOCK_J_WIDTH;
+        fig->height = BLOCK_J_HEIGHT;
         break;
     case BLOCK_Z:
         fig->width = BLOCK_Z_WIDTH;

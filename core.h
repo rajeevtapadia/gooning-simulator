@@ -1,9 +1,9 @@
 #ifndef CORE_H
 #define CORE_H
 
+#include <assert.h>
 #include <raylib.h>
 #include <sys/types.h>
-#include <assert.h>
 
 #define GRID_ROWS 100
 #define OPTIONS_ROWS 30
@@ -22,13 +22,13 @@
 #define SPREAD_CHANCE 50
 
 typedef enum {
-    BLOCK_I, // Straight line
+    BLOCK_I,      // Straight line
     BLOCK_SQUARE, // Square
-    BLOCK_T, // T-shape
-    BLOCK_S, // S-shape
-    BLOCK_Z, // Z-shape
-    BLOCK_J, // J-shape (L mirrored)
-    BLOCK_L, // L-shape
+    BLOCK_T,      // T-shape
+    BLOCK_S,      // S-shape
+    BLOCK_Z,      // Z-shape
+    BLOCK_J,      // J-shape (L mirrored)
+    BLOCK_L,      // L-shape
     BLOCK_TYPE_COUNT
 } BlockType;
 
@@ -37,6 +37,8 @@ typedef enum {
 #define SQUARE_BLOCK_SIZE 16
 #define BLOCK_L_WIDTH 24
 #define BLOCK_L_HEIGHT 14
+#define BLOCK_J_WIDTH 3 * BLOCK_SCALING_FACTOR
+#define BLOCK_J_HEIGHT 2 * BLOCK_SCALING_FACTOR
 #define BLOCK_S_WIDTH 3 * BLOCK_SCALING_FACTOR
 #define BLOCK_S_HEIGHT 2 * BLOCK_SCALING_FACTOR
 #define BLOCK_Z_WIDTH 3 * BLOCK_SCALING_FACTOR
@@ -109,4 +111,3 @@ GridPos vector2_to_grid_pos(Vector2 vector);
 Vector2 grid_pos_to_vector2(GridPos pos);
 
 #endif // CORE_H
-
