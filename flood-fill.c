@@ -2,7 +2,7 @@
 #include <string.h>
 
 // TODO: use can_spread() here
-static bool can_move() {
+bool can_move() {
     for (int row = GRID_ROWS - 2; row >= 0; row--) {
         for (int col = 1; col < GRID_COLS - 1; col++) {
             if (board[row][col].active) {

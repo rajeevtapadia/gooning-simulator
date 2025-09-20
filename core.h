@@ -21,6 +21,8 @@
 
 #define SPREAD_CHANCE 50
 
+#define CEILING_ROW 15
+
 typedef enum {
     BLOCK_I,      // Straight line
     BLOCK_SQUARE, // Square
@@ -75,6 +77,7 @@ typedef struct {
     GridPos position_offset;
     Figure ghost_figure;
     int fig_idx;
+    bool is_game_over;
 } DragState;
 
 typedef Pixel Grid[GRID_ROWS][GRID_COLS];
@@ -97,6 +100,7 @@ void perform_dragging();
 
 // flood-fill.c
 void flood_fill();
+bool can_move();
 
 // game-grid.c
 Pixel copy_pixel(GridPos pos);
