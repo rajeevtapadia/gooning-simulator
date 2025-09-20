@@ -38,11 +38,13 @@ void detect_dragging() {
 
 static void draw_ghost(Vector2 mouse) {
     Figure fig = drag_state.ghost_figure;
+    int vert_mid = fig.height / 2;
+    int horiz_mid = fig.width / 2;
     for (int i = 0; i < fig.height; i++) {
         for (int j = 0; j < fig.width; j++) {
             if (fig.mask[i][j]) {
-                int x = mouse.x + (j * PIXEL_SIZE);
-                int y = mouse.y + (i * PIXEL_SIZE);
+                int x = mouse.x + ((j - horiz_mid) * PIXEL_SIZE);
+                int y = mouse.y + ((i - vert_mid) * PIXEL_SIZE);
                 DrawRectangle(x, y, 5, 5, fig.color);
             }
         }
@@ -52,10 +54,12 @@ static void draw_ghost(Vector2 mouse) {
 static bool collides_with_game_grid(GridPos mouse_pos) {
     int fig_width = drag_state.ghost_figure.width;
     int fig_height = drag_state.ghost_figure.height;
+    int vert_mid = fig_height / 2;
+    int horiz_mid = fig_width / 2;
     for (int i = 0; i < fig_height; i++) {
         for (int j = 0; j < fig_width; j++) {
-            int row = mouse_pos.row + i;
-            int col = mouse_pos.col + j;
+            int row = mouse_pos.row + (i - vert_mid);
+            int col = mouse_pos.col + (j - horiz_mid);
             if (row < GRID_ROWS && col < GRID_COLS && board[row][col].active) {
                 return true;
             }
@@ -65,13 +69,16 @@ static bool collides_with_game_grid(GridPos mouse_pos) {
 }
 
 static void handle_drop(GridPos mouse_pos) {
-    if (mouse_pos.row < GRID_ROWS && !collides_with_game_grid(mouse_pos)) {
+    int vert_mid = drag_state.ghost_figure.height / 2;
+    if (mouse_pos.row + vert_mid < GRID_ROWS && !collides_with_game_grid(mouse_pos)) {
         Figure fig = drag_state.ghost_figure;
+        int vert_mid = fig.height / 2;
+        int horiz_mid = fig.width / 2;
         for (int i = 0; i < MAX_FIGURE_ROW; i++) {
             for (int j = 0; j < MAX_FIGURE_COL; j++) {
                 if (fig.mask[i][j]) {
-                    int row = mouse_pos.row + i;
-                    int col = mouse_pos.col + j;
+                    int row = mouse_pos.row + (i - vert_mid);
+                    int col = mouse_pos.col + (j - horiz_mid);
                     board[row][col] = (Pixel){.color = fig.color, .active = true};
                 }
             }
@@ -86,7 +93,9 @@ static void handle_drop(GridPos mouse_pos) {
 static bool validate_mouse_pos(GridPos mouse_pos) {
     int row = mouse_pos.row;
     int col = mouse_pos.col;
-    if (row >= 0 && row < SCREEN_ROWS && col >= 0 && col <= SCREEN_COLS - drag_state.ghost_figure.width) {
+    int vert_mid = drag_state.ghost_figure.height / 2;
+    int horiz_mid = drag_state.ghost_figure.width / 2;
+    if (row - vert_mid >= 0 && row + vert_mid < SCREEN_ROWS && col - horiz_mid >= 0 && col + horiz_mid <= SCREEN_COLS) {
         return true;
     }
     return false;
@@ -111,4 +120,3 @@ void perform_dragging() {
 
     draw_ghost(grid_pos_to_vector2(drag_state.position_offset));
 }
- 
