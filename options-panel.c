@@ -151,20 +151,22 @@ void generate_options() {
     }
 }
 
-// FIX: square assumed
 void render_options_panel() {
+    int slot_width = SCREEN_COLS / OPTIONS_COUNT;
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         Figure option_fig = options_panel[i];
+
+        // center the figure in its slot
+        int fig_col_start = (slot_width / 2) - (option_fig.width / 2);
+
         for (int i = 0; i < MAX_FIGURE_ROW; i++) {
             for (int j = 0; j < MAX_FIGURE_COL; j++) {
-                // printf("%d", option_fig.mask[i][j]);
                 if (option_fig.mask[i][j]) {
-                    int x = (option_fig.pos.col + j) * PIXEL_SIZE;
+                    int x = (option_fig.pos.col + j + fig_col_start) * PIXEL_SIZE;
                     int y = (option_fig.pos.row + i) * PIXEL_SIZE;
                     DrawRectangle(x, y, 5, 5, option_fig.color);
                 }
             }
-            // printf("\n");
         }
     }
 }

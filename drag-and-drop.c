@@ -2,14 +2,27 @@
 #include <stdio.h>
 
 static int is_on_which_square(GridPos mouse_pos) {
+    int slot_width = SCREEN_COLS / OPTIONS_COUNT;
+
     for (int i = 0; i < OPTIONS_COUNT; i++) {
         Figure fig = options_panel[i];
-        bool is_overlapping = (mouse_pos.row >= fig.pos.row) && (mouse_pos.row < fig.pos.row + fig.height) &&
-                              (mouse_pos.col >= fig.pos.col) && (mouse_pos.col < fig.pos.col + fig.width);
+
+        // adjust for the centered figures
+        int fig_col_start = (slot_width / 2) - (fig.width / 2);
+
+        int row_start = fig.pos.row;
+        int row_end = fig.pos.row + fig.height;
+        int col_start = fig.pos.col + fig_col_start;
+        int col_end = col_start + fig.width;
+
+        bool is_overlapping = (mouse_pos.row >= row_start && mouse_pos.row < row_end) &&
+                              (mouse_pos.col >= col_start && mouse_pos.col < col_end);
+
         if (is_overlapping) {
             return i;
         }
     }
+
     return -1;
 }
 
