@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "block-shapes/block_shapes.h"
 #include "core.h"
 
 Grid board = {0};
@@ -21,9 +20,6 @@ int main(void) {
     SetTargetFPS(60);
 
     GridPos square_pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
-
-    create_square_block(square_pos, GREEN);
-    // create_L_block(square_pos, GREEN);
 
     float timer = 0.0f;
     float delay = 0.005f;
