@@ -17,12 +17,12 @@ int main(void) {
     const int window_height = SCREEN_ROWS * pixel_height;
 
     InitWindow(window_width, window_height, "gooning simulator");
-    SetTargetFPS(60);
+    SetTargetFPS(100);
 
     GridPos square_pos = {.col = GRID_COLS / 2, .row = 3 * GRID_ROWS / 4};
 
     float timer = 0.0f;
-    float delay = 0.005f;
+    float delay = 0.01f;
 
     while (!WindowShouldClose()) {
         generate_options();
@@ -67,4 +67,3 @@ int main(void) {
 
     return 0;
 }
-

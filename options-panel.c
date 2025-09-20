@@ -11,8 +11,7 @@ static bool is_panel_empty() {
 }
 
 static BlockType get_random_block_type() {
-    return BLOCK_S;
-    // return (BlockType)(rand() % BLOCK_TYPE_COUNT);
+    return (BlockType)(rand() % BLOCK_TYPE_COUNT);
 }
 
 static void draw_square_on_board(Figure *option, int row, int col, int size) {
@@ -23,7 +22,6 @@ static void draw_square_on_board(Figure *option, int row, int col, int size) {
     }
 }
 
-// TODO: extend for other block types
 static void generate_mask(Figure *option) {
     int step, size;
     switch (option->type) {
@@ -91,7 +89,6 @@ static void generate_mask(Figure *option) {
     }
 }
 
-// TODO: extend for other block types
 static void set_fig_width_and_height(Figure *fig) {
     switch (fig->type) {
     case BLOCK_SQUARE:

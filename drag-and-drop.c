@@ -90,6 +90,25 @@ static void handle_drop(GridPos mouse_pos) {
     drag_state = (DragState){0};
 }
 
+static inline void snap_to_bounds(GridPos mouse_pos) {
+    int row = mouse_pos.row;
+    int col = mouse_pos.col;
+    int vert_mid = drag_state.ghost_figure.height / 2;
+    int horiz_mid = drag_state.ghost_figure.width / 2;
+
+    if (col + horiz_mid > SCREEN_COLS) {
+        drag_state.position_offset.col = SCREEN_COLS - horiz_mid;
+    } else if (col - horiz_mid < 0) {
+        drag_state.position_offset.col = horiz_mid;
+    }
+
+    if (row + vert_mid > SCREEN_ROWS) {
+        drag_state.position_offset.row = SCREEN_ROWS - vert_mid;
+    } else if (row - vert_mid < 0) {
+        drag_state.position_offset.row = vert_mid;
+    }
+}
+
 static bool validate_mouse_pos(GridPos mouse_pos) {
     int row = mouse_pos.row;
     int col = mouse_pos.col;
@@ -98,6 +117,8 @@ static bool validate_mouse_pos(GridPos mouse_pos) {
     if (row - vert_mid >= 0 && row + vert_mid < SCREEN_ROWS && col - horiz_mid >= 0 && col + horiz_mid <= SCREEN_COLS) {
         return true;
     }
+
+    snap_to_bounds(mouse_pos);
     return false;
 }
 
@@ -108,7 +129,6 @@ void perform_dragging() {
 
     Vector2 mouse = GetMousePosition();
     GridPos mouse_pos = vector2_to_grid_pos(mouse);
-    // TODO: snap figure to edge when mouse is out of game grid
     if (validate_mouse_pos(mouse_pos)) {
         drag_state.position_offset = mouse_pos;
     }
