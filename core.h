@@ -6,22 +6,22 @@
 #include <sys/types.h>
 
 #define GRID_ROWS 100
-#define OPTIONS_ROWS 30
+#define OPTIONS_ROWS 18
 #define SCREEN_ROWS (GRID_ROWS + OPTIONS_ROWS)
 
 #define SCREEN_COLS 100
 #define GRID_COLS SCREEN_COLS
 #define OPTIONS_COLS SCREEN_COLS
 
-#define PIXEL_SIZE 10
+#define PIXEL_SIZE 8
 #define OPTIONS_COUNT 3
 
 #define MAX_FIGURE_ROW 40
 #define MAX_FIGURE_COL 32
 
-#define SPREAD_CHANCE 50
+#define SPREAD_CHANCE 60
 
-#define CEILING_ROW 15
+#define CEILING_ROW 17
 
 typedef enum {
     BLOCK_I,      // Straight line

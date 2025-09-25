@@ -8,6 +8,9 @@ Grid board = {0};
 DragState drag_state = {0};
 Figure options_panel[OPTIONS_COUNT];
 
+Color BG_COLOR= (Color){30, 30, 30, 255};
+Color LINE_COLOR = (Color){200, 200, 200, 255};
+
 bool is_game_over() {
     if (can_move()) {
         return false;
@@ -37,11 +40,8 @@ int main(void) {
         update_pixels();
 
         BeginDrawing();
-        ClearBackground(DARKGRAY);
-        DrawLine(0, ceil_y, window_width, ceil_y, YELLOW);
-        if (is_game_over()) {
-            DrawText("Game Over", window_width / 4, window_width / 2, 100, RED);
-        }
+        ClearBackground(BG_COLOR);
+        DrawLine(0, ceil_y, window_width, ceil_y, LINE_COLOR);
 
         // render game grid
         for (int row = 0; row < GRID_ROWS; row++) {
@@ -52,9 +52,13 @@ int main(void) {
             }
         }
 
-        DrawLine(0, GRID_ROWS * PIXEL_SIZE, window_width, GRID_ROWS * PIXEL_SIZE, GREEN);
+        DrawLine(0, GRID_ROWS * PIXEL_SIZE, window_width, GRID_ROWS * PIXEL_SIZE, LINE_COLOR);
 
         render_options_panel();
+
+        if (is_game_over()) {
+            DrawText("Game Over", 133, 400, 100, RED);
+        }
 
         if (drag_state.is_game_over) {
             EndDrawing();

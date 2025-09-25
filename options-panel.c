@@ -125,7 +125,11 @@ static void set_fig_width_and_height(Figure *fig) {
 }
 
 Color get_random_color() {
-    Color colors[] = {BLUE, RED, GREEN};
+    Color C_BLUE = (Color){52, 152, 219, 255};  // Blue
+    Color C_RED = (Color){231, 76, 60, 255};    // Red
+    Color C_GREEN = (Color){46, 204, 113, 255}; // Green
+    Color colors[] = {C_BLUE, C_RED, C_GREEN};
+    // Color colors[] = {BLUE, RED, GREEN};
     int n = sizeof(colors) / sizeof(colors[0]);
     return colors[rand() % n];
 }
