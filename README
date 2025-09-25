@@ -1,0 +1,25 @@
+Gooning Simulator
+
+Just a simple game made with raylib and C.
+
+How to compile?
+- Linux (recommended)
+    1. Build raylib https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
+    2. git clone https://github.com/rajeevtapadia/gooning-simulator.git
+    3. cd gooning-simulator
+    4. make run
+    5. enjoy!!
+
+- Windows
+    If someone can find a reliable way to build on windows, PR will be 
+    appreciated.
+
+- Vibe coder
+    The release tab has statically linked binaries for you.
+
+
+Credits
+All credit goes to the annoying ads in this game.
+https://play.google.com/store/apps/details?id=com.wonderful.sandcrush
+
+
