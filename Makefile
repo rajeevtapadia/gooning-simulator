@@ -6,6 +6,10 @@ TARGET = main.out
 SRC := $(shell find . -name '*.c')
 OBJ := $(patsubst %.c,build/%.o,$(SRC))
 
+ifeq ($(SFW), 1)
+    CFLAGS += -DSFW
+endif
+
 all: $(TARGET)
 
 $(TARGET): $(OBJ)

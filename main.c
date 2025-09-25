@@ -8,7 +8,7 @@ Grid board = {0};
 DragState drag_state = {0};
 Figure options_panel[OPTIONS_COUNT];
 
-Color BG_COLOR= (Color){30, 30, 30, 255};
+Color BG_COLOR = (Color){30, 30, 30, 255};
 Color LINE_COLOR = (Color){200, 200, 200, 255};
 
 bool is_game_over() {
@@ -32,7 +32,13 @@ int main(void) {
     const int window_height = SCREEN_ROWS * pixel_height;
     const int ceil_y = CEILING_ROW * PIXEL_SIZE;
 
-    InitWindow(window_width, window_height, "gooning simulator");
+#ifdef SFW
+    const char *window_title = "stupid game";
+#else
+    const char *window_title = "gooning simulator";
+#endif
+
+    InitWindow(window_width, window_height, window_title);
     SetTargetFPS(80);
 
     while (!WindowShouldClose()) {
