@@ -82,9 +82,15 @@ typedef struct {
 
 typedef Pixel Grid[GRID_ROWS][GRID_COLS];
 
+typedef struct {
+    size_t lines_destroyed;
+    size_t pixels_destroyed;
+} Score;
+
 extern Grid board;
 extern DragState drag_state;
 extern Figure options_panel[OPTIONS_COUNT];
+extern Score game_score;
 
 // physics.c
 void update_pixels();
@@ -99,7 +105,7 @@ void detect_dragging();
 void perform_dragging();
 
 // flood-fill.c
-void flood_fill();
+size_t flood_fill();
 bool can_move();
 
 // game-grid.c

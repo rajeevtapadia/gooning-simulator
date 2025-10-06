@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdbool.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #include "core.h"
@@ -7,6 +8,7 @@
 Grid board = {0};
 DragState drag_state = {0};
 Figure options_panel[OPTIONS_COUNT];
+Score game_score;
 
 Color BG_COLOR = (Color){30, 30, 30, 255};
 Color LINE_COLOR = (Color){200, 200, 200, 255};
@@ -23,6 +25,22 @@ bool is_game_over() {
         }
     }
     return false;
+}
+
+size_t calculate_score() {
+    return game_score.pixels_destroyed * 0.1;
+}
+
+void write_score_to_screen() {
+#ifdef SFW
+    const char *prompt = "Score";
+#else
+    const char *prompt = "Gooning Score";
+#endif
+
+    char score_str[10];
+    sprintf(score_str, "%s: %zu", prompt, calculate_score());
+    DrawText(score_str, 0, 0, 30, PURPLE);
 }
 
 int main(void) {
@@ -75,9 +93,11 @@ int main(void) {
         perform_dragging();
 
         if (!drag_state.dragging) {
-            flood_fill();
+            size_t rm_count = flood_fill();
+            game_score.pixels_destroyed += rm_count;
         }
 
+        write_score_to_screen();
         EndDrawing();
     }
 

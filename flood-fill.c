@@ -49,19 +49,22 @@ static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color colo
     }
 }
 
-static void remove_visited(bool visited[GRID_ROWS][GRID_COLS]) {
+static size_t remove_visited(bool visited[GRID_ROWS][GRID_COLS]) {
+    size_t rm_count = 0;
     for (int row = GRID_ROWS - 1; row >= 0; row--) {
         for (int col = 0; col < GRID_COLS; col++) {
             if (visited[row][col] == 1) {
                 board[row][col] = (Pixel){0};
+                rm_count++;
             }
         }
     }
+    return rm_count;
 }
 
-void flood_fill() {
+size_t flood_fill() {
     if (can_move()) {
-        return;
+        return 0;
     }
 
     for (int row = GRID_ROWS - 1; row >= 0; row--) {
@@ -73,8 +76,9 @@ void flood_fill() {
             dfs(row, 0, visited, color, &touches_right);
 
             if (touches_right) {
-                remove_visited(visited);
+                return remove_visited(visited);
             }
         }
     }
+    return 0;
 }
