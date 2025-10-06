@@ -109,6 +109,9 @@ static inline void snap_to_bounds(GridPos mouse_pos) {
     int vert_mid = drag_state.ghost_figure.height / 2;
     int horiz_mid = drag_state.ghost_figure.width / 2;
 
+    drag_state.position_offset.row = row;
+    drag_state.position_offset.col = col;
+
     if (col + horiz_mid > SCREEN_COLS) {
         drag_state.position_offset.col = SCREEN_COLS - horiz_mid;
     } else if (col - horiz_mid < 0) {
