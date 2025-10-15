@@ -1,5 +1,13 @@
 #include "core.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+static const Color C_BLUE = (Color){52, 152, 219, 255};
+static const Color C_RED = (Color){231, 76, 60, 255};
+static const Color C_GREEN = (Color){46, 204, 113, 255};
+
+static const Color colors[] = {C_BLUE, C_RED, C_GREEN};
 
 static bool is_panel_empty() {
     for (int i = 0; i < OPTIONS_COUNT; i++) {
@@ -124,18 +132,46 @@ static void set_fig_width_and_height(Figure *fig) {
     }
 }
 
+bool are_color_repeating() {
+    const int n = sizeof(colors) / sizeof(colors[0]);
+    int color_count[n];
+    for (int i = 0; i < n; i++) {
+        color_count[i] = 0;
+    }
+
+    // Linear search for a color for each option
+    for (int i = 0; i < OPTIONS_COUNT; i++) {
+        for (int j = 0; j < n; j++) {
+            if (memcmp(&options_panel[i].color, &colors[j], sizeof(Color)) == 0) {
+                color_count[j]++;
+                break;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (color_count[i] > 2) {
+            return false;
+        }
+    }
+    return true;
+}
+
 Color get_random_color() {
-    Color C_BLUE = (Color){52, 152, 219, 255};  // Blue
-    Color C_RED = (Color){231, 76, 60, 255};    // Red
-    Color C_GREEN = (Color){46, 204, 113, 255}; // Green
-    Color colors[] = {C_BLUE, C_RED, C_GREEN};
-    // Color colors[] = {BLUE, RED, GREEN};
-    int n = sizeof(colors) / sizeof(colors[0]);
+    static const int n = sizeof(colors) / sizeof(colors[0]);
     return colors[rand() % n];
 }
 
-//
-// TODO: select figures and colors by random choice
+void ensure_option_colors_are_random() {
+    while (!are_color_repeating()) {
+        for (int i = 0; i < OPTIONS_COUNT; i++) {
+            options_panel[i] = (Figure){
+                .color = get_random_color(),
+            };
+        }
+    }
+}
+
 void generate_options() {
     if (!is_panel_empty() || drag_state.dragging)
         return;
@@ -153,6 +189,8 @@ void generate_options() {
         set_fig_width_and_height(&options_panel[i]);
         generate_mask(&options_panel[i]);
     }
+
+    ensure_option_colors_are_random();
 }
 
 void render_options_panel() {
