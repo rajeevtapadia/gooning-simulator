@@ -30,19 +30,28 @@ bool is_game_over() {
 }
 
 size_t calculate_score() {
+    if(game_score.max_gooning_streak < game_score.curr_gooning_streak) {
+        game_score.max_gooning_streak = game_score.curr_gooning_streak;
+    }
     return game_score.pixels_destroyed * 0.1;
 }
 
 void write_score_to_screen() {
 #ifdef SFW
-    const char *prompt = "Score";
+    const char *score_prompt = "Score";
+    const char *streak_prompt = "Streak";
 #else
-    const char *prompt = "Gooning Score";
+    const char *score_prompt = "Gooning Score";
+    const char *streak_prompt = "Gooning Streak";
 #endif
 
     char score_str[36];
-    sprintf(score_str, "%s: %zu", prompt, calculate_score());
+    sprintf(score_str, "%s: %zu", score_prompt, calculate_score());
     DrawText(score_str, 0, 0, 30, PURPLE);
+
+    char streak_str[37];
+    sprintf(streak_str, "%s: %zu", streak_prompt, game_score.max_gooning_streak);
+    DrawText(streak_str, 0, 35, 30, PURPLE);
 }
 
 int main(void) {
