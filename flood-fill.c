@@ -76,6 +76,7 @@ size_t flood_fill() {
             dfs(row, 0, visited, color, &touches_right);
 
             if (touches_right) {
+                game_score.curr_gooning_streak++;
                 return remove_visited(visited);
             }
         }

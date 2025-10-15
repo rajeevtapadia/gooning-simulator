@@ -85,6 +85,8 @@ typedef Pixel Grid[GRID_ROWS][GRID_COLS];
 typedef struct {
     size_t lines_destroyed;
     size_t pixels_destroyed;
+    size_t max_gooning_streak;
+    size_t curr_gooning_streak;
 } Score;
 
 extern Grid board;

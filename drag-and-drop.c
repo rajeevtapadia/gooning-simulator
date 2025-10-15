@@ -120,6 +120,8 @@ static inline void snap_to_bounds(GridPos mouse_pos) {
     } else if (row - vert_mid < 0) {
         drag_state.position_offset.row = vert_mid;
     }
+
+    game_score.curr_gooning_streak = 0;
 }
 
 static bool validate_mouse_pos(GridPos mouse_pos) {
