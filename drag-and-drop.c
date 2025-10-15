@@ -1,5 +1,4 @@
 #include "core.h"
-#include <stdio.h>
 
 static int is_on_which_square(GridPos mouse_pos) {
     int slot_width = SCREEN_COLS / OPTIONS_COUNT;
@@ -35,9 +34,7 @@ void detect_dragging() {
     }
     Vector2 mouse = GetMousePosition();
     GridPos mouse_pos = vector2_to_grid_pos(mouse);
-    print_position(mouse_pos);
     int fig_idx = is_on_which_square(mouse_pos);
-    printf("dragging fig: %d\n", fig_idx);
     if (fig_idx != -1) {
         drag_state = (DragState){
             .dragging = true,

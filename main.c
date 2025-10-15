@@ -1,6 +1,8 @@
 #include "raylib.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "core.h"
@@ -38,12 +40,13 @@ void write_score_to_screen() {
     const char *prompt = "Gooning Score";
 #endif
 
-    char score_str[10];
+    char score_str[36];
     sprintf(score_str, "%s: %zu", prompt, calculate_score());
     DrawText(score_str, 0, 0, 30, PURPLE);
 }
 
 int main(void) {
+    srand(time(0));
     const int pixel_width = PIXEL_SIZE;
     const int pixel_height = PIXEL_SIZE;
     const int window_width = SCREEN_COLS * pixel_width;
