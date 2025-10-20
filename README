@@ -10,6 +10,16 @@ How to compile?
     4. make run
     5. enjoy!!
 
+- Android
+    1. Follow this guide for setup
+        https://github.com/raysan5/raylib/wiki/Working-for-Android-(on-Linux)
+        These scripts (in the specific order) might be helpful for the setup.
+        - setup-android-env.sh
+        - compile-raylib-for-android.sh
+        - build-apk.sh
+    2. Install game.apk on your android device or do the adb thing.
+    3. enjoy!!
+
 - Windows
     If someone can find a reliable way to build on windows, PR will be 
     appreciated.

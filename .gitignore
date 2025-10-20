@@ -53,3 +53,10 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# android build
+*.apk
+./android/*
+./assets/*
+./raylib/*
+./lib/*
