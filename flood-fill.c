@@ -38,7 +38,7 @@ static void dfs(int row, int col, bool visited[GRID_ROWS][GRID_COLS], Color colo
         // sides
         dfs(row + 1, col, visited, color, touches_right);
         dfs(row - 1, col, visited, color, touches_right);
-        dfs(row, col - 1, visited, color, touches_right);
+        dfs(row, col + 1, visited, color, touches_right);
         dfs(row, col - 1, visited, color, touches_right);
 
         // diagonals
